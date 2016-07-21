@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class SimpleAuto implements Serializable
 {
-	long pageId;
+	String pageId;
 	String title;
 	String url;
 	double price;
@@ -14,7 +14,7 @@ public class SimpleAuto implements Serializable
 		// TODO Auto-generated constructor stub
 	}
 	
-	public SimpleAuto(long pageString, String title, String url, double price, double score) {
+	public SimpleAuto(String pageString, String title, String url, double price, double score) {
 		this.pageId = pageString;
 		this.title = title;
 		this.url = url;
@@ -42,7 +42,7 @@ public class SimpleAuto implements Serializable
 		return price;
 	}
 
-	public void setPrice(double price) {
+	public void setPrice(float price) {
 		this.price = price;
 	}
 
@@ -50,15 +50,15 @@ public class SimpleAuto implements Serializable
 		return score;
 	}
 
-	public void setScore(double score) {
+	public void setScore(float score) {
 		this.score = score;
 	}
 	
-	public long getPageId() {
+	public String getPageId() {
 		return pageId;
 	}
 
-	public void setPageId(long pageId) {
+	public void setPageId(String pageId) {
 		this.pageId = pageId;
 	}
 

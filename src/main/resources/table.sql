@@ -1,10 +1,10 @@
 DROP TABLE IF EXISTS `autohome`.`auto`;
 CREATE TABLE `autohome`.`auto` (
       `id` INTEGER(10) PRIMARY KEY AUTO_INCREMENT,
-      `page_id` INTEGER NOT NULL,
+      `page_id` VARCHAR(10) NOT NULL,
       `url` VARCHAR(1000) NOT NULL,
-      `price` FLOAT NOT NULL,
-      `score` FLOAT NOT NULL
+      `price` DOUBLE NOT NULL,
+      `score` DOUBLE NOT NULL
 )ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 CREATE INDEX `idx_auto__id` ON `auto`(`page_id`);
@@ -40,7 +40,7 @@ CREATE TABLE `autohome`.`auto_carbody` (
       `后轮距` INTEGER NOT NULL,
       `最小离地间隙` INTEGER NOT NULL,
       `整备质量` INTEGER NOT NULL,
-      `车身结构` INTEGER NOT NULL,
+      `车身结构` VARCHAR(50) NOT NULL,
       `车门数` INTEGER NOT NULL,
       `座位数` INTEGER NOT NULL,
       `油箱容积` INTEGER NOT NULL,
@@ -60,13 +60,13 @@ CREATE TABLE `autohome`.`auto_engine` (
       `每缸气门数` INTEGER(3) NOT NULL,
       `压缩比` FLOAT NOT NULL,
       `配气机构` VARCHAR(50) NOT NULL,
-      `缸径` INTEGER(10) NOT NULL,
+      `缸径` float NOT NULL,
       `行程` FLOAT NOT NULL,
       `最大马力` INTEGER(10) NOT NULL,
-      `最大功率` INTEGER(10) NOT NULL,
-      `最大功率转速` INTEGER(10) NOT NULL,
+      `最大功率` FLOAT NOT NULL,
+      `最大功率转速` VARCHAR(50) NOT NULL,
       `最大扭矩` INTEGER(10) NOT NULL,
-      `最大扭矩转速` INTEGER(10) NOT NULL,
+      `最大扭矩转速` VARCHAR(50) NOT NULL,
       `发动机特有技术` VARCHAR(50) NOT NULL,
       `燃料形式` VARCHAR(50) NOT NULL,
       `燃油标号` VARCHAR(50) NOT NULL,
@@ -82,7 +82,7 @@ CREATE TABLE `autohome`.`auto_gearbox` (
       `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
       `auto_id` INTEGER NOT NULL,
       `简称` VARCHAR(50) NOT NULL,
-      `挡位个数` INTEGER(3) NOT NULL,
+      `挡位个数` VARCHAR(50) NOT NULL,
       `变速箱类型` VARCHAR(50) NOT NULL
 )ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
@@ -91,7 +91,9 @@ ALTER TABLE `autohome`.`auto_gearbox` ADD CONSTRAINT `fk_auto_gearbox__auto_id` 
 CREATE TABLE `autohome`.`auto_chassis` (
       `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
       `auto_id` INTEGER NOT NULL,
-      `驱动方式` VARCHAR(50) NOT NULL,
+      `驱动方式` VARCHAR(50),
+      `四驱形式` VARCHAR(50),
+      `中央差速器结构` VARCHAR(50),
       `前悬架类型` VARCHAR(50) NOT NULL,
       `后悬架类型` VARCHAR(50) NOT NULL,
       `助力类型` VARCHAR(50) NOT NULL,
@@ -147,12 +149,12 @@ CREATE TABLE `autohome`.`auto_ControlConfig` (
       `上坡辅助` INTEGER(2) NOT NULL,
       `自动驻车` INTEGER(2) NOT NULL,
       `陡坡缓降` INTEGER(2) NOT NULL,
-      `可变悬架` INTEGER(2) NOT NULL,
+      `可变悬架` VARCHAR(50) NOT NULL,
       `空气悬架` INTEGER(2) NOT NULL,
       `可变转向比` INTEGER(2) NOT NULL,
-      `前桥限滑差速器/差速锁` INTEGER(2) NOT NULL,
+      `前桥限滑差速器/差速锁` VARCHAR(50) NOT NULL,
       `中央差速器锁止功能` INTEGER(2) NOT NULL,
-      `后桥限滑差速器/差速锁` INTEGER(2) NOT NULL
+      `后桥限滑差速器/差速锁` VARCHAR(50) NOT NULL
 )ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 ALTER TABLE `autohome`.`auto_ControlConfig` ADD CONSTRAINT `fk_auto_ControlConfig__auto_id` FOREIGN KEY (`auto_id`) REFERENCES `auto` (`id`);
@@ -165,7 +167,7 @@ CREATE TABLE `autohome`.`auto_ExternalConfig` (
       `运动外观套件` INTEGER(2) NOT NULL,
       `铝合金轮圈` INTEGER(2) NOT NULL,
       `电动吸合门` INTEGER(2) NOT NULL,
-      `侧滑门` INTEGER(2) NOT NULL,
+      `侧滑门` VARCHAR(50) NOT NULL,
       `电动后备厢` INTEGER(2) NOT NULL,
       `感应后备厢` INTEGER(2) NOT NULL,
       `车顶行李架` INTEGER(2) NOT NULL
@@ -214,8 +216,8 @@ CREATE TABLE `autohome`.`auto_SeatConfig` (
       `后排座椅通风` INTEGER(2) NOT NULL,
       `前排座椅按摩` INTEGER(2) NOT NULL,
       `后排座椅按摩` INTEGER(2) NOT NULL,
-      `第三排座椅` INTEGER(2) NOT NULL,
-      `后排座椅放倒方式` INTEGER(2) NOT NULL,
+      `第三排座椅` VARCHAR(50) NOT NULL,
+      `后排座椅放倒方式` VARCHAR(50) NOT NULL,
       `前中央扶手` INTEGER(2) NOT NULL,
       `后中央扶手` INTEGER(2) NOT NULL,
       `后排杯架` INTEGER(2) NOT NULL
@@ -312,3 +314,22 @@ CREATE TABLE `autohome`.`auto_HighTechConfig` (
 )ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 ALTER TABLE `autohome`.`auto_HighTechConfig` ADD CONSTRAINT `fk_auto_HighTechConfig__auto_id` FOREIGN KEY (`auto_id`) REFERENCES `auto` (`id`);
+
+ALTER TABLE auto ADD UNIQUE (url);
+ALTER TABLE auto_basic ADD UNIQUE (auto_id);
+ALTER TABLE auto_aircon ADD UNIQUE (auto_id);
+ALTER TABLE auto_carbody ADD UNIQUE (auto_id);
+ALTER TABLE auto_engine ADD UNIQUE (auto_id);
+ALTER TABLE auto_gearbox ADD UNIQUE (auto_id);
+ALTER TABLE auto_chassis ADD UNIQUE (auto_id);
+ALTER TABLE auto_WheelBrake ADD UNIQUE (auto_id);
+ALTER TABLE auto_safetyequipment ADD UNIQUE (auto_id);
+ALTER TABLE auto_ControlConfig ADD UNIQUE (auto_id);
+ALTER TABLE auto_ExternalConfig ADD UNIQUE (auto_id);
+ALTER TABLE auto_InternalConfig ADD UNIQUE (auto_id);
+ALTER TABLE auto_SeatConfig ADD UNIQUE (auto_id);
+ALTER TABLE auto_MediaConfig ADD UNIQUE (auto_id);
+ALTER TABLE auto_LightConfig ADD UNIQUE (auto_id);
+ALTER TABLE auto_GlassConfig ADD UNIQUE (auto_id);
+ALTER TABLE auto_Aircon ADD UNIQUE (auto_id);
+ALTER TABLE auto_HighTechConfig ADD UNIQUE (auto_id);

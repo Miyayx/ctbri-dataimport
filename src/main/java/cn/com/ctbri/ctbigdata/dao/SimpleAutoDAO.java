@@ -14,7 +14,7 @@ public interface SimpleAutoDAO
 			
 	public void insertBatchSQL(String sql);
 	
-	public void insertConfig(List<JSONObject> jos);
+	public void insertConfig(List<JSONObject> jos) throws Exception;
 	
 	public String findAutoById(int id);
 	

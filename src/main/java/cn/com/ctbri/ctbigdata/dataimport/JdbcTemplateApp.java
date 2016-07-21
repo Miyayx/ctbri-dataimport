@@ -3,8 +3,10 @@ package cn.com.ctbri.ctbigdata.dataimport;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,15 +22,11 @@ import cn.com.ctbri.ctbigdata.autohome.model.SimpleAuto;
 import cn.com.ctbri.ctbigdata.dao.SimpleAutoDAO;
 
 public class JdbcTemplateApp {
-	public static void main(String[] args) throws IOException, ParseException {
-		// if you have time,
-		// it's better to create an unit test rather than testing like this :)
 
-		ApplicationContext context = new ClassPathXmlApplicationContext("Spring-Module.xml");
+	public static void insertAutoSpecific(SimpleAutoDAO simpleAutoDAO, String filename)
+			throws IOException, ParseException {
 
-		SimpleAutoDAO simpleAutoDAO = (SimpleAutoDAO) context.getBean("simpleAutoDAO");
-
-		File file = new File("/Users/Miyayx/Documents/workspace/pageparser-autohome/autohome_result.dat");
+		File file = new File(filename);
 
 		BufferedReader in = new BufferedReader(
 				new InputStreamReader(new FileInputStream(file.toPath().toString()), "UTF8"));
@@ -37,44 +35,70 @@ public class JdbcTemplateApp {
 		List<SimpleAuto> autos = new ArrayList<SimpleAuto>();
 		JSONParser parser = new JSONParser();
 
+		int count = 0;
 		while ((s = in.readLine()) != null) {
+			count++;
 			JSONObject jo = (JSONObject) parser.parse(s);
-			if (jo.get("type").equals(1)) {
-				SimpleAuto auto = new SimpleAuto((Long) jo.get("page_string"), (String) jo.get("title"),
+
+			if (((Long) jo.get("type")) == 1) {
+				SimpleAuto auto = new SimpleAuto((String) jo.get("page_string"), (String) jo.get("title"),
 						(String) jo.get("url"), (Double) jo.get("全款购车"), (Double) jo.get("用户评分"));
 				autos.add(auto);
-				if(autos.size() == 100){
+				if (autos.size() == 30) {
 					simpleAutoDAO.insertBatch(autos);
 					autos = new ArrayList<SimpleAuto>();
 				}
 			}
 		}
+		simpleAutoDAO.insertBatch(autos);
 		in.close();
 
-		in = new BufferedReader(new InputStreamReader(new FileInputStream(file.toPath().toString()), "UTF8"));
+	}
+
+	public static void insertAutoConfig(SimpleAutoDAO simpleAutoDAO, String filename)
+			throws IOException, ParseException, Exception {
+
+		File file = new File(filename);
+
+		BufferedReader in = new BufferedReader(
+				new InputStreamReader(new FileInputStream(file.toPath().toString()), "UTF8"));
 
 		List<JSONObject> jos = new ArrayList<JSONObject>();
 
+		String s;
+		JSONParser parser = new JSONParser();
+
+		int c = 0;
 		while ((s = in.readLine()) != null) {
+			c++;
 			JSONObject jo = (JSONObject) parser.parse(s);
-			if (jo.get("type").equals(2)) {
+			if ((Long) jo.get("type") == 2) {
 				jos.add(jo);
-				if (jos.size() == 100) {
+				if (jos.size() == 20) {
 					simpleAutoDAO.insertConfig(jos);
 					jos = new ArrayList<JSONObject>();
 				}
-
 			}
-
 		}
+		try {
+			simpleAutoDAO.insertConfig(jos);
+		} catch (Exception e) {
+			System.out.println(c + e.getMessage());
+		}
+		in.close();
 
-		String sql = "INSERT INFO AUTO" + "(page_string, url, price, score)" + "VALUES" + "(?, ?, ?, ?)";
-		simpleAutoDAO.insertBatchSQL(sql);
+	}
+
+	public static void main(String[] args) throws Exception {
+
+		ApplicationContext context = new ClassPathXmlApplicationContext("Spring-Module.xml");
+
+		SimpleAutoDAO simpleAutoDAO = (SimpleAutoDAO) context.getBean("simpleAutoDAO");
+
+		insertAutoSpecific(simpleAutoDAO, "xaa");
+		insertAutoConfig(simpleAutoDAO, "xaa");
 
 		System.out.println("Batch Insert Done!");
-
-		int total = simpleAutoDAO.findTotalAuto();
-		System.out.println("Total : " + total);
 
 	}
 }
